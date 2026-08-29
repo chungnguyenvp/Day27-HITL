@@ -7,8 +7,12 @@ from uuid import uuid4
 
 import streamlit as st
 
+from config import load_environment
 from graph import build_graph, new_config
 from models import CustomerProfile
+
+
+load_environment()
 
 
 CUSTOMER_PRESETS: dict[str, CustomerProfile] = {

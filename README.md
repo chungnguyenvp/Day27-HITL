@@ -23,6 +23,7 @@ Yêu cầu Python 3.10+. Nếu `python` không có trong PATH, dùng Python Laun
 py -3.13 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
+Copy-Item .env.example .env
 ```
 
 Nếu PowerShell chặn activation, chạy trực tiếp `\.venv\Scripts\python.exe -m pip install -r requirements.txt`.
@@ -53,11 +54,11 @@ Demo luôn hiển thị một low-risk auto execution và một high-risk pendin
 Không gửi key vào chat, source code hoặc Git. Hãy revoke key đã từng dán trong hội thoại và tự tạo key mới nếu cần. API mode chỉ bật khi bạn tự đặt biến môi trường trên máy:
 
 ```powershell
-python -m pip install "openai>=1.0,<2.0"
-$env:OPENAI_API_KEY = "your-new-key"
-$env:USE_OPENAI = "true"
-streamlit run app.py
+Copy-Item .env.example .env
+notepad .env
 ```
+
+Trong `.env`, điền `OPENAI_API_KEY` mới (và có thể đổi `OPENAI_MODEL`). File `.env` đã được ignore bởi Git. Nếu không muốn dùng file, có thể set `$env:OPENAI_API_KEY` trong PowerShell thay thế. Cài SDK tùy chọn bằng `python -m pip install "openai>=1.0,<2.0"`.
 
 Trong app, bật **Use OpenAI reasoner (optional)**. Key chỉ được SDK đọc từ environment phía server; app không hiển thị hoặc ghi key vào log. Thiếu key/lỗi provider sẽ tự fallback deterministic, và hard policy vẫn được áp dụng.
 
