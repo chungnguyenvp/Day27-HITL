@@ -8,5 +8,6 @@ __pycache__/
 .env
 .env.*
 !.env.example
-audit_log.json
+# Keep the empty starter audit file in the repository; runtime entries are local.
+!audit_log.json
 *.log
