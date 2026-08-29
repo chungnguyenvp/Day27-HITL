@@ -63,7 +63,10 @@ def main(argv: list[str] | None = None) -> int:
         print("\nHUMAN DECISION APPLIED")
         print(json.dumps(resumed, indent=2, ensure_ascii=False, default=str))
     else:
-        print("\nPending. Re-run with --decision approve|reject|edit to resume.")
+        print(
+            "\nPending in this process. Pass --decision approve|reject|edit "
+            "to resume during the same invocation."
+        )
     return 0
 
 

@@ -94,10 +94,17 @@ def _openai_reasoning(customer: CustomerProfile) -> dict[str, str | float]:
 
 
 def reason_customer(
-    customer: CustomerProfile, use_openai: bool = False
+    customer: CustomerProfile, use_openai: bool | None = None
 ) -> dict[str, str | float]:
     """Use OpenAI only when explicitly requested; otherwise stay offline."""
 
+    if use_openai is None:
+        use_openai = os.getenv("USE_OPENAI", "false").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+            "on",
+        }
     if not use_openai:
         return deterministic_reasoning(customer)
     try:

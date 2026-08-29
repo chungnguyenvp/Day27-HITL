@@ -1,4 +1,5 @@
 from models import CustomerProfile
+import reasoning
 from reasoning import deterministic_reasoning, reason_customer
 
 
@@ -19,3 +20,17 @@ def test_reason_customer_without_openai_is_local_and_valid():
     assert result["proposed_action"] == "send_email"
     assert 0.0 <= result["confidence_score"] <= 1.0
     assert result["reasoning"]
+
+
+def test_reason_customer_honors_use_openai_environment_flag(monkeypatch):
+    monkeypatch.setenv("USE_OPENAI", "true")
+    expected = {
+        "proposed_action": "send_email",
+        "confidence_score": 0.88,
+        "reasoning": "provider result",
+    }
+    monkeypatch.setattr(reasoning, "_openai_reasoning", lambda customer: expected)
+
+    assert reason_customer(
+        CustomerProfile(toi=250_000_000, churn_probability=0.2), use_openai=None
+    ) == expected

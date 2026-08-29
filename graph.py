@@ -34,7 +34,9 @@ def _customer_from_state(state: GraphState) -> CustomerProfile:
     raise ValueError("state must include a valid customer profile")
 
 
-def evaluate_customer(state: GraphState, *, use_openai: bool = False) -> dict[str, object]:
+def evaluate_customer(
+    state: GraphState, *, use_openai: bool | None = None
+) -> dict[str, object]:
     customer = _customer_from_state(state)
     proposal = reason_customer(customer, use_openai=use_openai)
     return {
@@ -141,7 +143,7 @@ def execute_high_risk_action(state: GraphState) -> dict[str, object]:
 
 
 def build_graph(
-    audit_path: str | Path = "audit_log.json", use_openai: bool = False
+    audit_path: str | Path = "audit_log.json", use_openai: bool | None = None
 ):
     """Compile a checkpointed graph that pauses before high-risk execution."""
 

@@ -24,6 +24,15 @@ CUSTOMER_PRESETS: dict[str, CustomerProfile] = {
 }
 
 
+def openai_enabled_by_default() -> bool:
+    return os.getenv("USE_OPENAI", "false").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
 def normalize_decision(
     decision: str, edited_action: str | None
 ) -> tuple[str, str | None]:
@@ -71,6 +80,27 @@ def resume_with_decision(
     return graph.invoke(None, config)
 
 
+def _try_resume(
+    graph,
+    config: dict,
+    decision: str,
+    reviewer_id: str,
+    edited_action: str | None = None,
+) -> bool:
+    try:
+        resume_with_decision(
+            graph,
+            config,
+            decision,
+            edited_action=edited_action,
+            reviewer_id=reviewer_id,
+        )
+    except ValueError as exc:
+        st.error(str(exc))
+        return False
+    return True
+
+
 @st.cache_resource(show_spinner=False)
 def _cached_graph(use_openai: bool):
     return build_graph(
@@ -98,7 +128,7 @@ def render_app() -> None:
         st.header("Workflow setup")
         use_openai = st.toggle(
             "Use OpenAI reasoner (optional)",
-            value=False,
+            value=openai_enabled_by_default(),
             help="Requires OPENAI_API_KEY in your local environment; never paste it here.",
         )
         preset_label = st.selectbox("Customer preset", list(CUSTOMER_PRESETS))
@@ -150,20 +180,20 @@ def render_app() -> None:
         )
         approve_col, reject_col, edit_col = st.columns(3)
         if approve_col.button("✅ Approve", use_container_width=True):
-            resume_with_decision(graph, config, "Approve", reviewer_id=reviewer_id)
-            st.rerun()
+            if _try_resume(graph, config, "Approve", reviewer_id):
+                st.rerun()
         if reject_col.button("🛑 Reject", use_container_width=True):
-            resume_with_decision(graph, config, "Reject", reviewer_id=reviewer_id)
-            st.rerun()
+            if _try_resume(graph, config, "Reject", reviewer_id):
+                st.rerun()
         if edit_col.button("✏️ Edit & apply", use_container_width=True):
-            resume_with_decision(
+            if _try_resume(
                 graph,
                 config,
                 "Edit",
+                reviewer_id,
                 edited_action=edited_action,
-                reviewer_id=reviewer_id,
-            )
-            st.rerun()
+            ):
+                st.rerun()
     elif values.get("execution_status"):
         if values["execution_status"] == "executed":
             st.success(f"Action completed: {values.get('execution_message', '—')}")

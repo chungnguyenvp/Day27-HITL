@@ -58,7 +58,7 @@ Copy-Item .env.example .env
 notepad .env
 ```
 
-Trong `.env`, điền `OPENAI_API_KEY` mới (và có thể đổi `OPENAI_MODEL`). File `.env` đã được ignore bởi Git. Nếu không muốn dùng file, có thể set `$env:OPENAI_API_KEY` trong PowerShell thay thế. Cài SDK tùy chọn bằng `python -m pip install "openai>=1.0,<2.0"`.
+Trong `.env`, điền `OPENAI_API_KEY` mới, đặt `USE_OPENAI=true` nếu muốn bật mặc định (và có thể đổi `OPENAI_MODEL`). File `.env` đã được ignore bởi Git. Nếu không muốn dùng file, có thể set `$env:OPENAI_API_KEY` trong PowerShell thay thế. Cài SDK tùy chọn bằng `python -m pip install "openai>=1.0,<2.0"`.
 
 Trong app, bật **Use OpenAI reasoner (optional)**. Key chỉ được SDK đọc từ environment phía server; app không hiển thị hoặc ghi key vào log. Thiếu key/lỗi provider sẽ tự fallback deterministic, và hard policy vẫn được áp dụng.
 
